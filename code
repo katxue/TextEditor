@@ -1,0 +1,304 @@
+#include <iostream>
+#include <string>
+#include <cstdlib>
+using namespace std;
+
+string user_input();
+void vowels_consonants(string input);
+bool is_vowel(char c);
+void letter_swap(string input, char letter1, char letter2);
+string reverse_string(string input);
+bool is_palindrome(string input, string stripped);
+void word_frequency(int n, string words[], int index);
+string stripped_input(const string& input, const string& lowercase_input);
+int user_input_arr(string lowercase_input, string words[]);
+string no_upper(string input);
+
+
+int main() { //i know this is more than 15 lines but it's because there's a lot of functions idk dawg
+
+    cout << "Please enter a sentence or paragraph: ";
+    string input = user_input();
+    string words[100];
+    int choice;
+    
+    do {
+
+        cout << "Please select an option:\n";
+        cout << "1. Count vowels and consonants\n";
+        cout << "2. Swap letters\n";
+        cout << "3. Reverse string\n";
+        cout << "4. Check if palindrome\n";
+        cout << "5. Count word frequency\n";
+        cout << "6. Exit\n";
+        
+        while (!(cin >> choice)) {
+            cout << "Invalid choice. Please try again.\n";
+            cin.clear();
+            cin.ignore(100, '\n');
+        }
+
+        switch (choice) { //switch case for user to choose options
+            case 1:
+                vowels_consonants(input);
+                break;
+            case 2:
+                {
+                    char letter1, letter2;
+                    cout << "Enter two letters to swap: ";
+                    cin >> letter1 >> letter2;
+                    letter_swap(input, letter1, letter2);
+
+                }
+                break;
+            case 3:
+                cout << "Original string: " << input << endl;
+                cout << "Reversed string: " << reverse_string(input) << endl;
+                break;
+            case 4:
+                {
+                    string lowercase_input = no_upper(input);
+                    string stripped = stripped_input(input, lowercase_input);
+                    if (is_palindrome(input, stripped)) {
+                        cout << input << " is a palindrome." << endl;
+                    } else {
+                        cout << input << " is not a palindrome." << endl;
+                    }
+                }
+                break;
+            case 5:
+                {
+                    int n;
+                    int index;
+                    string lowercase_input;
+                    cout << "Enter the size of the array: ";
+                    cin >> n;
+                    lowercase_input = no_upper(input);
+                    index = user_input_arr(lowercase_input, words);
+                    word_frequency(n, words, index);
+                }
+                break;
+            case 6:
+                cout << "Exiting program.\n";
+                break;
+            default:
+                cout << "Invalid choice. Please try again.\n";
+        }
+
+    } while (choice != 6);
+
+    return 0;
+}
+
+
+//Function: user_input()
+//Description: gets input
+//Parameter: none
+//Pre-condition: user input
+//Post-conditon: returns a string called "input"
+string user_input(){
+    string input;
+    getline(cin, input);
+    return input;
+}
+
+//Function: no_upper()
+//Description: takes a string and converts to lowercase, removes digits and special characters
+//Parameter: string input
+//Pre-condition: takes a string
+//Post-conditon: returns a string 
+string no_upper(string input){
+    string lowercase_input;
+
+    for (int i = 0; i < input.length(); i++)
+    {
+        if (input[i] >= 'A' && input[i] <= 'Z') 
+        {
+            lowercase_input += input[i] + ('a' - 'A'); // convert uppercase letter to lowercase and add to lowercase_input
+        }
+        else if ((input[i] >= '0' && input[i] <= '9') || (input[i] < 'A' || input[i] > 'Z') && (input[i] < 'a' || input[i] > 'z') && input[i] != ' ')
+        {
+            continue; // skip adding digits and special characters to lowercase_input
+        }
+        else
+        {
+            lowercase_input += input[i]; // add non-digit and non-special character to lowercase_input
+        }
+    }
+    return lowercase_input;
+}
+
+
+//Function: stripped_input()
+//Description: takes a string and removes all spaces
+//Parameter: string input, string lowercase_input
+//Pre-condition: takes a string
+//Post-conditon: returns a string
+string stripped_input(const string& input, const string& lowercase_input) //i dont need this really but it's auto -50 if you dont use a reference
+{
+    string stripped = "";
+    for (int i = 0; i < lowercase_input.length(); i++) {
+        char c = lowercase_input[i];
+        if ((c >= 'a' && c <= 'z')) {
+            stripped += c;
+        }
+    }
+    return stripped;
+}
+
+//Function: is_vowel()
+//Description: helper function which tells if a character is a vowel
+//Parameter: char c
+//Pre-condition: takes in a character
+//Post-conditon: outputs bool, true if c is a character
+bool is_vowel(char c){
+    return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u' || c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U'; //helper function, could be put into vowels_consonants()
+}
+
+//Function: vowels_consonants()
+//Description: checks if there are the same number of vowels as there are consonants
+//Parameter: string input
+//Pre-condition: takes in string
+//Post-conditon: no output
+void vowels_consonants(string input){
+    int num_vow = 0;
+    int num_con = 0;
+    for (int i = 0; i<input.length(); i++){
+        if(is_vowel(input[i])){
+            num_vow++;
+        }
+        else if((input[i]>='a'&& input[i]<='z') || (input[i]>='A'&& input[i]<='Z'))
+            num_con++;
+    }
+    if(num_con == 0 && num_vow ==0){
+        cout << "There are no vowels or consonants" << endl;
+        return;
+    }
+    if(num_con==num_vow){
+        cout << "The number of vowels matches the number of consonants." << endl;
+    }
+    else{
+        cout << "The number of vowels does not match the number of consonants." << endl;
+    }
+}
+
+//Function: letter_swap()
+//Description: swaps 2 letters
+//Parameter: string input, char letter1, char letter2
+//Pre-condition: takes in string input, and 2 letters
+//Post-conditon: no output
+void letter_swap(string input, char letter1, char letter2) {
+    string copy = input;
+    for (int i = 0; i < copy.length(); i++) {
+        if (copy[i] == letter1 || copy[i] == letter1 - ('a' - 'A') || copy[i] == letter1 + ('a' - 'A')) { //makes sure capitals are preserved
+            copy[i] = (copy[i] == letter1) ? letter2 : (copy[i] == letter1 - ('a' - 'A') ? letter2 - ('a' - 'A') : letter2 + ('a' - 'A'));
+        }
+    }
+    cout << "Original string: " << input << endl;
+    cout << "Modified string: " << copy << endl;
+}
+
+
+//Function: reverse_string()
+//Description: reverses a string
+//Parameter: string input
+//Pre-condition: takes in input
+//Post-conditon: returns the reversed string
+string reverse_string(string input){
+    string copy = input;
+    int start = 0;
+    int end = copy.length() - 1;
+    while (start < end) { //copies onto temp
+        char temp = copy[start];
+        copy[start] = copy[end];
+        copy[end] = temp;
+        start++;
+        end--;
+    }
+    return copy;
+}
+
+//Function: is_palindrome()
+//Description: checks to see if input string is a palindrome
+//Parameter: string input, string stripped
+//Pre-condition: takes in string
+//Post-conditon: outputs bool, true if string is a palindrome
+bool is_palindrome(string input, string stripped){
+        if (stripped.length() ==0){
+        cout << "There are no characters" << endl;
+        return false;
+    }
+    int start = 0;
+    int end = stripped.length() - 1;
+    while (start < end) {
+        if (stripped[start] != stripped[end]) { //starts at front and back of stripped input and checks if characters are the same
+            return false;
+        }
+        start++;
+        end--;
+    }
+    return true;
+}
+
+
+//Function: user_input_arr()
+//Description: creates an array of individual words from user input
+//Parameter: string lowercase_input, string words[]
+//Pre-condition: valid lowercase_input and intitialized array
+//Post-conditon: returns integer index (size of array)
+int user_input_arr(string lowercase_input, string words[]) {
+    string word;
+    int index = 0;
+    const int MAX_WORDS = 100;
+
+    for (int i = 0; i < lowercase_input.length(); i++) {
+        if (lowercase_input[i] == ' ') { //breaks up input by the spaces
+            if (word.length() > 0) {
+                words[index++] = word;
+                word = "";
+            }
+        } else {
+            word += lowercase_input[i];
+        }
+        if (index == MAX_WORDS) {
+            break;
+        }
+    }
+
+    if (word.length() > 0) {
+        words[index++] = word; //adds to words array
+    }
+
+    return index;
+}
+
+//Function: word_frequency()
+//Description: checks user input array to array of words
+//Parameter: int n, string words[], int index
+//Pre-condition: uses words array and array the user creates
+//Post-conditon: no output
+void word_frequency(int n, string words[], int index) {
+    cout << "Enter " << n << " words:\n";
+    string input_arr[n];
+    for (int i = 0; i < n; i++) {
+        cin >> input_arr[i];
+    }
+
+    int freq[n]; 
+    
+    for (int i = 0; i < n ; i++) {
+        freq[i]=0;} //intializes frequency array as 0
+    
+    
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < index; j++) {
+            if (input_arr[i] == words[j]) { //if input array and words array at any given index is same, frequency is added
+                freq[i]+= 1;
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        cout << input_arr[i] << " appears " << freq[i] << " times" << endl;
+    }
+}
